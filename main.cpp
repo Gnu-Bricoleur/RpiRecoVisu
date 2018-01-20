@@ -7,6 +7,8 @@ using namespace std;
 bitmap_image noir_ou_blanc(bitmap_image image);
 bitmap_image soustraire_images(bitmap_image image1, bitmap_image image2);
 bitmap_image convolution(bitmap_image image1, vector<vector<int> > matrice);
+void recherche_hauteur (bitmap_image image, int y, int x1, int x2);
+void rectangles_blancs(bitmap_image image);
 
 int main()
 {
@@ -45,6 +47,9 @@ int main()
    image1 = noir_ou_blanc(image1);
    image1 = convolution(image1, erosion);
    image1.save_image("resultat_glorieux.bmp");
+   cout<<"Resultat Glorieux !"<<endl;
+   image1 = noir_ou_blanc(image1);
+   rectangles_blancs(image1);
    return 0;
 }
 
@@ -116,33 +121,33 @@ bitmap_image convolution(bitmap_image image, vector<vector<int> > matrice)
       for (std::size_t x = 1; x < width-1; ++x)
       {
          rgb_t colour1;
-	 rgb_t colour2;
-	 rgb_t colour3;
-	 rgb_t colour4;
-	 rgb_t colour5;
-	 rgb_t colour6;
-	 rgb_t colour7;
-	 rgb_t colour8;
-	 rgb_t colour9;
+		 rgb_t colour2;
+		 rgb_t colour3;
+		 rgb_t colour4;
+		 rgb_t colour5;
+		 rgb_t colour6;
+		 rgb_t colour7;
+		 rgb_t colour8;
+		 rgb_t colour9;
 
-	 rgb_t colour;
+		 rgb_t colour;
 
-     image.get_pixel(x-1, y-1, colour1);
-	 image.get_pixel(x-1, y, colour2);
-	 image.get_pixel(x-1, y+1, colour3);
-	 image.get_pixel(x, y-1, colour4);
-	 image.get_pixel(x, y, colour5);
-	 image.get_pixel(x, y+1, colour6);
-	 image.get_pixel(x+1, y-1, colour7);
-	 image.get_pixel(x+1, y, colour8);
-	 image.get_pixel(x+1, y+1, colour9);
+		 image.get_pixel(x-1, y-1, colour1);
+		 image.get_pixel(x-1, y, colour2);
+		 image.get_pixel(x-1, y+1, colour3);
+		 image.get_pixel(x, y-1, colour4);
+		 image.get_pixel(x, y, colour5);
+		 image.get_pixel(x, y+1, colour6);
+		 image.get_pixel(x+1, y-1, colour7);
+		 image.get_pixel(x+1, y, colour8);
+		 image.get_pixel(x+1, y+1, colour9);
 
-	 colour.red = (matrice[0][0]*colour1.red + matrice[0][1]*colour2.red + matrice[0][2]*colour3.red + matrice[1][0]*colour4.red + matrice[1][1]*colour5.red + matrice[1][2]*colour6.red + matrice[2][0]*colour7.red + matrice[2][1]*colour8.red + matrice[2][2]*colour9.red)/9;
+		 colour.red = (matrice[0][0]*colour1.red + matrice[0][1]*colour2.red + matrice[0][2]*colour3.red + matrice[1][0]*colour4.red + matrice[1][1]*colour5.red + matrice[1][2]*colour6.red + matrice[2][0]*colour7.red + matrice[2][1]*colour8.red + matrice[2][2]*colour9.red)/9;
 
-	 colour.green = colour.red;
-	 colour.blue = colour.red;
+		 colour.green = colour.red;
+		 colour.blue = colour.red;
 
-	 image.set_pixel(x, y, colour);
+		 image.set_pixel(x, y, colour);
       }
    }
    return image;
@@ -156,22 +161,26 @@ void rectangles_blancs(bitmap_image image)
 	const unsigned int width  = image.width();
 	rgb_t couleur;
 	int y = image.height()/2;
+	y = 400;	//############################################################################ A CORRIGER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	int debut_blob = -10;
 	int fin_blob = -10;
 	bool blob = false;
-	
+	cout<<"recherche de rectangles"<<endl;
 	for (std::size_t x = 0; x < width; ++x)
 	{
 		image.get_pixel(x, y, couleur);
+		//cout<<(int)couleur.red<<endl;
 		if (couleur.red == 255 && blob == false)
 		{
 			blob = true;
 			debut_blob = x;
+			cout<<"debut blob"<<endl;
 		}
 		if (couleur.red == 0 && blob == true)
 		{
 			blob = false;
 			fin_blob = x - 1;
+			cout<<"fin blob"<<endl;
 		}
 		if (debut_blob > 0 && fin_blob > 0)
 		{
@@ -183,11 +192,9 @@ void rectangles_blancs(bitmap_image image)
 		
 	}
 
-
-
 }
 
-int recherche_hauteur (bitmap_image image, int y, int x1, int x2)
+void recherche_hauteur (bitmap_image image, int y, int x1, int x2)
 {
     rgb_t colour;
     int coordonees[2];
@@ -208,8 +215,10 @@ int recherche_hauteur (bitmap_image image, int y, int x1, int x2)
         y2--;
     }
     coordonees[1] = y2;
-
-    return coordonees;
+	
+	
+    cout<<"coordonnes du rectangle"<<x1<<","<<x2<<","<<coordonees[0]<<","<<coordonees[1]<<endl;
+    
 }
 
 void moyenne_bord(bitmap_image image, int tolerance, int coord)
