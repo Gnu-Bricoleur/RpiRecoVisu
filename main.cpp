@@ -148,4 +148,11 @@ bitmap_image convolution(bitmap_image image, vector<vector<int> > matrice)
    return image;
 }
 
-
+void rectangles_blancs(bitmap_image image)
+{
+	//On boucle dans l'image à une hauteur intermediaire pour chercher les pixels blancs
+	
+	//
+	
+	
+}
