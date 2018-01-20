@@ -199,17 +199,21 @@ void recherche_hauteur (bitmap_image image, int y, int x1, int x2)
     rgb_t colour;
     int coordonees[2];
     int x = (x1 + x2)/2;
-
+    
+	image.get_pixel(x, y, colour);
+    
     int y1 = y;
-    while (colour.red == 250)
+    while (colour.red == 255)
     {
         image.get_pixel(x, y1, colour);
         y1++;
     }
     coordonees[0] = y1;
 
+	image.get_pixel(x, y, colour);
+
     int y2 = y;
-    while (colour.red == 250)
+    while (colour.red == 255)
     {
         image.get_pixel(x, y2, colour);
         y2--;
@@ -217,7 +221,7 @@ void recherche_hauteur (bitmap_image image, int y, int x1, int x2)
     coordonees[1] = y2;
 	
 	
-    cout<<"coordonnes du rectangle"<<x1<<","<<x2<<","<<coordonees[0]<<","<<coordonees[1]<<endl;
+    cout<<"coordonnes du rectangle : "<<x1<<","<<x2<<","<<coordonees[0]<<","<<coordonees[1]<<endl;
     
 }
 
