@@ -17,6 +17,8 @@ int main()
    vector<vector<int> > erosion(3, vector<int>(3,0));
    erosion = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
 
+	//vector<vector<int> > erosion {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
+
    bitmap_image image1("imgled.bmp");
    bitmap_image image2("imgssled.bmp");
    if (!image1)
