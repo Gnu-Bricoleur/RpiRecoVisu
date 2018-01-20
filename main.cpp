@@ -151,8 +151,41 @@ bitmap_image convolution(bitmap_image image, vector<vector<int> > matrice)
 void rectangles_blancs(bitmap_image image)
 {
 	//On boucle dans l'image à une hauteur intermediaire pour chercher les pixels blancs
+	const unsigned int height = image.height();
+	const unsigned int width  = image.width();
+	rgb_t couleur;
+	int y = image.height()/2;
+	int debut_blob = -10;
+	int fin_blob = -10;
+	bool blob = false;
 	
-	//
+	for (std::size_t x = 0; x < width; ++x)
+	{
+		image.get_pixel(x, y, couleur);
+		if (couleur.red == 255 && blob == false)
+		{
+			blob = true;
+			debut_blob = x;
+		}
+		if (couleur.red == 0 && blob == true)
+		{
+			blob = false;
+			fin_blob = x - 1;
+		}
+		if (debut_blob > 0 && fin_blob > 0)
+		{
+			recherche_hauteur(image, y, debut_blob, fin_blob);
+			blob = false;
+			debut_blob = -10;
+			fin_blob = -10;
+		}
+		
+	}
 	
+	
+}
+
+void moyenne_bord(bitmap_image image, int tolerance, int coord)
+{
 	
 }
