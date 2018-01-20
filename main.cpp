@@ -19,8 +19,8 @@ int main()
 
 	//vector<vector<int> > erosion {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
 
-   bitmap_image image1("imgled.bmp");
-   bitmap_image image2("imgssled.bmp");
+   bitmap_image image1("avecflash24t.bmp");
+   bitmap_image image2("ssflash24t.bmp");
    if (!image1)
    {
       printf("Error - Failed to open: input1.bmp\n");
@@ -147,3 +147,5 @@ bitmap_image convolution(bitmap_image image, vector<vector<int> > matrice)
    } 
    return image;
 }
+
+
