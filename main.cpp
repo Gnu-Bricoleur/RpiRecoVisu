@@ -9,6 +9,8 @@ bitmap_image soustraire_images(bitmap_image image1, bitmap_image image2);
 bitmap_image convolution(bitmap_image image1, vector<vector<int> > matrice);
 void recherche_hauteur (bitmap_image image, int y, int x1, int x2);
 void rectangles_blancs(bitmap_image image);
+void verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2);
+int moyenne_bord_x(bitmap_image image, int tolerance, int coord);
 
 int main()
 {
@@ -45,10 +47,10 @@ int main()
    image1 = noir_ou_blanc(image1);
    image1 = convolution(image1, erosion);
    image1 = noir_ou_blanc(image1);
-   image1 = convolution(image1, erosion);
+   image1 = convolution(image1, erosion);   
+   image1 = noir_ou_blanc(image1);
    image1.save_image("resultat_glorieux.bmp");
    cout<<"Resultat Glorieux !"<<endl;
-   image1 = noir_ou_blanc(image1);
    rectangles_blancs(image1);
    return 0;
 }
@@ -208,7 +210,7 @@ void recherche_hauteur (bitmap_image image, int y, int x1, int x2)
         image.get_pixel(x, y1, colour);
         y1++;
     }
-    coordonees[0] = y1;
+    coordonees[0] = y1-1;
 
 	image.get_pixel(x, y, colour);
 
@@ -218,14 +220,55 @@ void recherche_hauteur (bitmap_image image, int y, int x1, int x2)
         image.get_pixel(x, y2, colour);
         y2--;
     }
-    coordonees[1] = y2;
+    coordonees[1] = y2+1;
 	
 	
     cout<<"coordonnes du rectangle : "<<x1<<","<<x2<<","<<coordonees[0]<<","<<coordonees[1]<<endl;
     
+    verif_rectangle(image, x1, x2, coordonees[0], coordonees[1]);
+    
 }
 
-void moyenne_bord(bitmap_image image, int tolerance, int coord)
+void verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2)
 {
+	x1 = moyenne_bord_x(image, 5, x1);
+	x2 = moyenne_bord_x(image, 5, x2);
+	//y1 = moyenne_bord_y(image, 5, y1);
+	//y2 = moyenne_bord_y(image, 5, y2);
 	
+	
+	
+}
+
+
+int moyenne_bord_x(bitmap_image image, int tolerance, int coord)
+{
+	const unsigned int height = image.height();
+	const unsigned int width  = image.width();
+	
+	int tab_densite[15];
+	int densitee = 0;
+	rgb_t colour;
+	
+	for (std::size_t x = coord - tolerance; x < coord + tolerance; ++x)
+    {
+		for (std::size_t y = 0; y < height; ++y)
+		{
+			image.get_pixel(x, y, colour);
+			if (colour.red == 255)
+			{
+				densitee++;
+			}
+		}
+		tab_densite[x - (coord - tolerance)] = densitee;
+		cout<<densitee<<",";
+		densitee = 0;
+	}
+	cout<<endl;
+	//for (int i = 0; i < tolerance; ++i) ATTENTION TABLEAU CONTIENT PAS BONNES VALEURS, BIZARRE
+	//{
+		//cout<<tab_densite[i]<<",";
+	//}
+	//cout<<endl;
+	return coord;
 }
