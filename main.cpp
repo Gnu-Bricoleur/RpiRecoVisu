@@ -10,10 +10,10 @@ bitmap_image convolution(bitmap_image image1, vector<vector<int> > matrice);
 
 int main()
 {
-   
+
    //int tab_erosion[3][3] = {{0, 1, 0},{1, 1, 1},{0, 1, 0}};
    //int (*erosion)[3] = tab_erosion;
- 
+
    vector<vector<int> > erosion(3, vector<int>(3,0));
    erosion = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
 
@@ -26,13 +26,13 @@ int main()
       printf("Error - Failed to open: input1.bmp\n");
       return 1;
    }
-   
+
    if (!image2)
    {
       printf("Error - Failed to open: input2.bmp\n");
       return 1;
    }
- 
+
    image1 = noir_ou_blanc(image1);
    image1.save_image("1.bmp");
    image2 = noir_ou_blanc(image2);
@@ -98,7 +98,7 @@ bitmap_image noir_ou_blanc(bitmap_image image)
 	    image.set_pixel(x, y, 0, 0, 0);
 	 }
       }
-   } 
+   }
    return image;
 }
 
@@ -136,7 +136,7 @@ bitmap_image convolution(bitmap_image image, vector<vector<int> > matrice)
 	 image.get_pixel(x+1, y-1, colour7);
 	 image.get_pixel(x+1, y, colour8);
 	 image.get_pixel(x+1, y+1, colour9);
-	 
+
 	 colour.red = (matrice[0][0]*colour1.red + matrice[0][1]*colour2.red + matrice[0][2]*colour3.red + matrice[1][0]*colour4.red + matrice[1][1]*colour5.red + matrice[1][2]*colour6.red + matrice[2][0]*colour7.red + matrice[2][1]*colour8.red + matrice[2][2]*colour9.red)/9;
 
 	 colour.green = colour.red;
@@ -144,15 +144,25 @@ bitmap_image convolution(bitmap_image image, vector<vector<int> > matrice)
 
 	 image.set_pixel(x, y, colour);
       }
-   } 
+   }
    return image;
 }
 
-void rectangles_blancs(bitmap_image image)
+void rechercheDeBlobs(bitmap_image image)
 {
-	//On boucle dans l'image Ã  une hauteur intermediaire pour chercher les pixels blancs
-	
+    const unsigned int height = image.height();
+    const unsigned int width  = image.width();
+	//On boucle dans l'image à une hauteur intermediaire pour chercher les pixels blancs
+        for ( size_t y=0; y<height; y++ )
+        {
+            for (size_t x=0; x< width; x++)
+            {
+               image.get_pixel (x, y, colour.red >= 50, colour.green >= 50, colour.blue >= 50)
+
+            }
+        }
 	//
-	
-	
+
+
 }
+
