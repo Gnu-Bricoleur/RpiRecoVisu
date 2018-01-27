@@ -134,26 +134,6 @@ bitmap_image noir_ou_blanc(bitmap_image image)
     const unsigned int height = image.height();
     const unsigned int width  = image.width();
 
-<<<<<<< HEAD
-   for (std::size_t y = 0; y < height; ++y)
-   {
-      for (std::size_t x = 0; x < width; ++x)
-      {
-         rgb_t colour;
-
-         image.get_pixel(x, y, colour);
-         if ( colour.red * 299/1000 + colour.green * 587/1000 + colour.blue * 114/1000 > 200)// ITU-R 601-2 et seuil a 200
-	 {
-            image.set_pixel(x, y, 255, 255, 255);
-	 }
-	 else
-	 {
-	    image.set_pixel(x, y, 0, 0, 0);
-	 }
-      }
-   }
-   return image;
-=======
     for (std::size_t y = 0; y < height; ++y)
     {
         for (std::size_t x = 0; x < width; ++x)
@@ -172,7 +152,6 @@ bitmap_image noir_ou_blanc(bitmap_image image)
         }
     }
     return image;
->>>>>>> 1773c7cd660d32bd886dde6637770c6a4b24d7ad
 }
 
 
@@ -184,61 +163,46 @@ bitmap_image convolution(bitmap_image image, vector<vector<int> > matrice)
     const unsigned int height = image.height();
     const unsigned int width  = image.width();
 
-<<<<<<< HEAD
-   for (std::size_t y = 1; y < height-1; ++y)
-   {
-      for (std::size_t x = 1; x < width-1; ++x)
-      {
-         rgb_t colour1;
-	 rgb_t colour2;
-	 rgb_t colour3;
-	 rgb_t colour4;
-	 rgb_t colour5;
-	 rgb_t colour6;
-	 rgb_t colour7;
-	 rgb_t colour8;
-	 rgb_t colour9;
+    for (std::size_t y = 1; y < height-1; ++y)
+    {
+        for (std::size_t x = 1; x < width-1; ++x)
+        {
+            rgb_t colour1;
+            rgb_t colour2;
+            rgb_t colour3;
+            rgb_t colour4;
+            rgb_t colour5;
+            rgb_t colour6;
+            rgb_t colour7;
+            rgb_t colour8;
+            rgb_t colour9;
 
-	 rgb_t colour;
+            rgb_t colour;
 
-         image.get_pixel(x-1, y-1, colour1);
-	 image.get_pixel(x-1, y, colour2);
-	 image.get_pixel(x-1, y+1, colour3);
-	 image.get_pixel(x, y-1, colour4);
-	 image.get_pixel(x, y, colour5);
-	 image.get_pixel(x, y+1, colour6);
-	 image.get_pixel(x+1, y-1, colour7);
-	 image.get_pixel(x+1, y, colour8);
-	 image.get_pixel(x+1, y+1, colour9);
+            image.get_pixel(x-1, y-1, colour1);
+            image.get_pixel(x-1, y, colour2);
+            image.get_pixel(x-1, y+1, colour3);
+            image.get_pixel(x, y-1, colour4);
+            image.get_pixel(x, y, colour5);
+            image.get_pixel(x, y+1, colour6);
+            image.get_pixel(x+1, y-1, colour7);
+            image.get_pixel(x+1, y, colour8);
+            image.get_pixel(x+1, y+1, colour9);
 
-	 colour.red = (matrice[0][0]*colour1.red + matrice[0][1]*colour2.red + matrice[0][2]*colour3.red + matrice[1][0]*colour4.red + matrice[1][1]*colour5.red + matrice[1][2]*colour6.red + matrice[2][0]*colour7.red + matrice[2][1]*colour8.red + matrice[2][2]*colour9.red)/9;
+            colour.red = (matrice[0][0]*colour1.red + matrice[0][1]*colour2.red + matrice[0][2]*colour3.red + matrice[1][0]*colour4.red + matrice[1][1]*colour5.red + matrice[1][2]*colour6.red + matrice[2][0]*colour7.red + matrice[2][1]*colour8.red + matrice[2][2]*colour9.red)/9;
 
-	 colour.green = colour.red;
-	 colour.blue = colour.red;
+            colour.green = colour.red;
+            colour.blue = colour.red;
 
-	 image.set_pixel(x, y, colour);
-      }
-   }
-   return image;
+            image.set_pixel(x, y, colour);
+        }
+    }
+    return image;
 }
 
-void rechercheDeBlobs(bitmap_image image)
+void rectangles_blancs(bitmap_image image)
 {
-    const unsigned int height = image.height();
-    const unsigned int width  = image.width();
-	//On boucle dans l'image à une hauteur intermediaire pour chercher les pixels blancs
-        for ( size_t y=0; y<height; y++ )
-        {
-            for (size_t x=0; x< width; x++)
-            {
-               image.get_pixel (x, y, colour.red >= 50, colour.green >= 50, colour.blue >= 50)
-
-            }
-        }
-	//
-
-=======
-    //On boucle dans l'image Ã  une hauteur intermediaire pour chercher les pixels blancs
+    //On boucle dans l'image à une hauteur intermediaire pour chercher les pixels blancs
 
     const unsigned int height = image.height();
     const unsigned int width  = image.width();
@@ -327,7 +291,7 @@ void verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2)
 
     int largeur = x2 - x1;
     int hauteur = y2 - y1;
-    cout<<"Est un rectangle : "<<est_un_rectangle(largeur, hauteur, 50, 0, 1000) << endl; //Tolerance et Tailles de diagonales Ã  determiner
+    cout<<"Est un rectangle : "<<est_un_rectangle(largeur, hauteur, 50, 0, 1000) << endl; //Tolerance et Tailles de diagonales à determiner
 
 }
 
@@ -373,7 +337,5 @@ bool est_un_rectangle (int largeur, int hauteur, int tolerance, int plusPetiteDi
     double diagonale = sqrt( pow(largeur,2) + pow(hauteur,2) );
     cout<<"Diagonale : "<< diagonale<<endl;
     return (9*largeur < hauteur+tolerance && 9*largeur > hauteur-tolerance) && (diagonale < plusGrandeDiagonale && diagonale > plusPetiteDiagonale);
->>>>>>> 1773c7cd660d32bd886dde6637770c6a4b24d7ad
 
 }
-
