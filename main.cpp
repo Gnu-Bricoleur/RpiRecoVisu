@@ -8,12 +8,14 @@ using namespace std;
 bitmap_image noir_ou_blanc(bitmap_image image);
 bitmap_image soustraire_images(bitmap_image image1, bitmap_image image2);
 bitmap_image convolution(bitmap_image image1, vector<vector<int> > matrice);
-void recherche_hauteur (bitmap_image image, int y, int x1, int x2);
+void recherche_hauteur (bitmap_image image, int y, int x1, int x2, int* coordonees);
 void rectangles_blancs(bitmap_image image);
 
 void verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2);
 int moyenne_bord_x(bitmap_image image, int tolerance, int coord);
 
+int moyenne_bord_y(bitmap_image image, int tolerance, int coord);
+int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y);
 bool est_un_rectangle (int largeur, int hauteur, int tolerance, int plusPetiteDiagonale, int plusGrandeDiagonale);
 
 
@@ -58,45 +60,6 @@ int main()
    cout<<"Resultat Glorieux !"<<endl;
    rectangles_blancs(image1);
    return 0;
-
-    //int tab_erosion[3][3] = {{0, 1, 0},{1, 1, 1},{0, 1, 0}};
-    //int (*erosion)[3] = tab_erosion;
-
-    vector<vector<int> > erosion(3, vector<int>(3,0));
-    erosion = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
-
-    //vector<vector<int> > erosion {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
-
-    bitmap_image image1("avecflash24t.bmp");
-    bitmap_image image2("ssflash24t.bmp");
-    if (!image1)
-    {
-        printf("Error - Failed to open: input1.bmp\n");
-        return 1;
-    }
-
-    if (!image2)
-    {
-        printf("Error - Failed to open: input2.bmp\n");
-        return 1;
-    }
-
-    image1 = noir_ou_blanc(image1);
-    image1.save_image("1.bmp");
-    image2 = noir_ou_blanc(image2);
-    image2.save_image("2.bmp");
-    image1 = soustraire_images(image1, image2);
-    image1.save_image("3.bmp");
-    image1 = convolution(image1, erosion);
-    image1 = noir_ou_blanc(image1);
-    image1 = convolution(image1, erosion);
-    image1 = noir_ou_blanc(image1);
-    image1 = convolution(image1, erosion);
-    image1.save_image("resultat_glorieux.bmp");
-    cout<<"Resultat Glorieux !"<<endl;
-    image1 = noir_ou_blanc(image1);
-    rectangles_blancs(image1);
-    return 0;
 
 }
 
@@ -200,11 +163,13 @@ bitmap_image convolution(bitmap_image image, vector<vector<int> > matrice)
     return image;
 }
 
-void rectangles_blancs(bitmap_image image)
-{
-    //On boucle dans l'image à une hauteur intermediaire pour chercher les pixels blancs
 
-    const unsigned int height = image.height();
+int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y)
+{
+	int nombre_blob = 0;
+	int coordonees[2];
+	//On boucle dans l'image à une hauteur intermediaire pour chercher les pixels blancs
+	const unsigned int height = image.height();
     const unsigned int width  = image.width();
     rgb_t couleur;
     int y = image.height()/2;
@@ -231,22 +196,75 @@ void rectangles_blancs(bitmap_image image)
         }
         if (debut_blob > 0 && fin_blob > 0)
         {
-            recherche_hauteur(image, y, debut_blob, fin_blob);
-            blob = false;
-            debut_blob = -10;
-            fin_blob = -10;
-        }
-
-    }
-
+            //coordonees = recherche_hauteur(image, y, debut_blob, fin_blob);
+	    //moyenne_bord_y();
+	    	int prem = nombre_blob*2;
+		int deux = nombre_blob*2+1;
+	    	tableau_blob_x[prem] = debut_blob;
+		tableau_blob_x[deux] = fin_blob;
+		nombre_blob +=1;
+           	blob = false;
+            	debut_blob = -10;
+            	fin_blob = -10;
+        	}
+	}
+    	return nombre_blob;
 }
 
-void recherche_hauteur (bitmap_image image, int y, int x1, int x2)
-{
-    rgb_t colour;
-    int coordonees[2];
-    int x = (x1 + x2)/2;
 
+//TODO
+//fonction moyenne x et y
+//determinatio y
+//
+
+
+
+
+
+void rectangles_blancs(bitmap_image image)
+{
+	cout<<"########################################################### Debut Reco Visu"<<endl;
+	int tableau_blob_x[100];
+	int tableau_blob_y[100];
+	cout<<"recherche de blobs"<<endl;
+	int nombre_blob = recherche_blobs(image, tableau_blob_x, tableau_blob_y);
+	cout<<nombre_blob<<" blobs trouve"<<endl;
+	int i = 0;
+	int y = 400;										//CONSTANTE MAGIQUE A DETERMINEER QCIENTIFIQUEMENT
+	int coordonees[2];
+	for (i = 0; i <nombre_blob; i++)
+	{
+		cout<<"######## Blob n"<<i<<endl;
+		cout<<"largeur blob "<<tableau_blob_x[i*2]<<" ; "<< tableau_blob_x[i*2+1]<<endl;
+		recherche_hauteur(image,y,  tableau_blob_x[i*2], tableau_blob_x[i*2+1], coordonees);
+		cout<<"hauteur blob n "<<i<<" : "<<coordonees[0]<<"  "<<coordonees[1]<<endl;
+		tableau_blob_x[nombre_blob*2] = moyenne_bord_x(image, 5, tableau_blob_x[i*2]);
+		tableau_blob_x[nombre_blob*2+1] = moyenne_bord_x(image, 5, tableau_blob_x[i*2+1]);
+		tableau_blob_y[nombre_blob*2] = moyenne_bord_y(image, 5, coordonees[0]);
+		tableau_blob_y[nombre_blob*2+1] = moyenne_bord_y(image, 5, coordonees[1]);
+	}	
+}	
+
+
+void recherche_hauteur (bitmap_image image, int y, int x1, int x2, int* coordonees)//image, hauteur arbitraire y du rectangle, xdebut rectangle, x fin rectangle
+{
+    const unsigned int height = image.height();
+    rgb_t colour;
+    //int coordonees[2];
+    int x = (x1 + x2)/2;
+    bool prems = true;
+    
+    for (std::size_t y = 0; y < height; ++y)
+	{
+		image.get_pixel(x, y, colour);
+		if (colour.red == 255)
+		{
+			coordonees[1] = y;
+			if(prems == true){coordonees[0] = y;prems = false;}
+		}
+	}  
+    
+    /*
     image.get_pixel(x, y, colour);
 
     int y1 = y;
@@ -267,25 +285,22 @@ void recherche_hauteur (bitmap_image image, int y, int x1, int x2)
     }
 
     coordonees[1] = y2+1;
-	
-	
+		
     cout<<"coordonnes du rectangle : "<<x1<<","<<x2<<","<<coordonees[0]<<","<<coordonees[1]<<endl;
-    
-    verif_rectangle(image, x1, x2, coordonees[0], coordonees[1]);
+*/
+   // verif_rectangle(image, x1, x2, coordonees[0], coordonees[1]);
     
 }
 
 void verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2)
 {
+	int coordonees[2];
 	x1 = moyenne_bord_x(image, 5, x1);
 	x2 = moyenne_bord_x(image, 5, x2);
 	//y1 = moyenne_bord_y(image, 5, y1);
 	//y2 = moyenne_bord_y(image, 5, y2);
 	
-	
-	
-
-    coordonees[1] = y2;
+	coordonees[1] = y2;
 
     cout<<"coordonnes du rectangle : "<<x1<<","<<x2<<","<<coordonees[0]<<","<<coordonees[1]<<endl;
 
@@ -295,6 +310,13 @@ void verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2)
 
 }
 
+
+
+
+int moyenne_bord_y(bitmap_image image, int tolerance, int coord)
+{
+	return coord;
+}
 
 int moyenne_bord_x(bitmap_image image, int tolerance, int coord)
 {
@@ -307,7 +329,7 @@ int moyenne_bord_x(bitmap_image image, int tolerance, int coord)
 	rgb_t colour;
 	
 	for (std::size_t x = coord - tolerance; x < coord + tolerance; ++x)
-    {
+   	{
 		for (std::size_t y = 0; y < height; ++y)
 		{
 			image.get_pixel(x, y, colour);
