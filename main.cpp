@@ -215,6 +215,10 @@ int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y
 //TODO
 //fonction moyenne x et y
 //determinatio y
+//audit est_un_rectangle
+//
+//
+//
 //
 
 
@@ -232,17 +236,41 @@ void rectangles_blancs(bitmap_image image)
 	int i = 0;
 	int y = 400;										//CONSTANTE MAGIQUE A DETERMINEER QCIENTIFIQUEMENT
 	int coordonees[2];
+	int tableau_bandes[100];
+	int nbrBandes= 0;
 	for (i = 0; i <nombre_blob; i++)
 	{
 		cout<<"######## Blob n"<<i<<endl;
 		cout<<"largeur blob "<<tableau_blob_x[i*2]<<" ; "<< tableau_blob_x[i*2+1]<<endl;
 		recherche_hauteur(image,y,  tableau_blob_x[i*2], tableau_blob_x[i*2+1], coordonees);
 		cout<<"hauteur blob n "<<i<<" : "<<coordonees[0]<<"  "<<coordonees[1]<<endl;
-		tableau_blob_x[nombre_blob*2] = moyenne_bord_x(image, 5, tableau_blob_x[i*2]);
-		tableau_blob_x[nombre_blob*2+1] = moyenne_bord_x(image, 5, tableau_blob_x[i*2+1]);
-		tableau_blob_y[nombre_blob*2] = moyenne_bord_y(image, 5, coordonees[0]);
-		tableau_blob_y[nombre_blob*2+1] = moyenne_bord_y(image, 5, coordonees[1]);
+		tableau_blob_x[i*2] = moyenne_bord_x(image, 5, tableau_blob_x[i*2]);
+		tableau_blob_x[i*2+1] = moyenne_bord_x(image, 5, tableau_blob_x[i*2+1]);
+		tableau_blob_y[i*2] = moyenne_bord_y(image, 5, coordonees[0]);
+		tableau_blob_y[i*2+1] = moyenne_bord_y(image, 5, coordonees[1]);
+	}
+	//on a un beau tableau de blobs propres
+	for (i = 0; i < nombre_blob; i++)//on s'assure que nos blobs sont de beaux rectangles avec de bonnes proportions et compris entre deux bornes
+	{
+		int largeur = tableau_blob_x[i*2+1]-tableau_blob_x[i*2];
+		int hauteur = tableau_blob_y[i*2+1]-tableau_blob_y[i*2];
+		if (est_un_rectangle(largeur, hauteur, 5, 10, 400))// tolerance et bornes min et max //A VERIFIER VRAI%MENT #################################################""
+		{
+			nbrBandes +=1;
+			tableau_bandes[] = tableau_blob_x[i*4], 
+				tableau_bandes[] = tableau_blob_x[], 
+				tableau_blob_y[], 
+				tableau_blob_y[]);
+		}
 	}	
+	if (nbrBandes != 2)
+	{
+		cout<<"ALEEEEERRRTE !!!!!!!!!!!!!!!!!!! NOUS AVONS UN CODE ROUGE !!!!!!"<<endl;
+	}
+	else
+	{
+		cout<<"tous vas bien, on a ddeux bandes"<<endl;
+	}
 }	
 
 
