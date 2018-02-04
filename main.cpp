@@ -17,7 +17,7 @@ int moyenne_bord_x(bitmap_image image, int tolerance, int coord);
 int moyenne_bord_y(bitmap_image image, int tolerance, int coord);
 int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y);
 bool est_un_rectangle (int largeur, int hauteur, int tolerance, int plusPetiteDiagonale, int plusGrandeDiagonale);
-
+void decision(bitmap_image image, int centrey1, int centrey2);
 
 int main()
 {
@@ -222,7 +222,20 @@ int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y
 //
 
 
-
+void decision(bitmap_image image, int centrey1, int centrey2)
+{
+	const unsigned int height = image.height();
+	const unsigned int width  = image.width();
+	int moy = (centrey1 + centrey2)/2;
+	if (moy > width/2)
+	{
+		cout<<"Droite"<<endl;
+	}
+	else
+	{
+		cout<<"Gauche"<<endl;
+	}
+}
 
 
 void rectangles_blancs(bitmap_image image)
@@ -256,11 +269,11 @@ void rectangles_blancs(bitmap_image image)
 		int hauteur = tableau_blob_y[i*2+1]-tableau_blob_y[i*2];
 		if (est_un_rectangle(largeur, hauteur, 5, 10, 400))// tolerance et bornes min et max //A VERIFIER VRAI%MENT #################################################""
 		{
+			tableau_bandes[nbrBandes*4] = tableau_blob_x[i*2]; 
+			tableau_bandes[nbrBandes*4+1] = tableau_blob_x[i*2 + 1];
+			tableau_bandes[nbrBandes*4+2] = tableau_blob_y[i*2];
+			tableau_bandes[nbrBandes*4+3] = tableau_blob_y[i*2+1];
 			nbrBandes +=1;
-			tableau_bandes[] = tableau_blob_x[i*4], 
-				tableau_bandes[] = tableau_blob_x[], 
-				tableau_blob_y[], 
-				tableau_blob_y[]);
 		}
 	}	
 	if (nbrBandes != 2)
@@ -271,6 +284,7 @@ void rectangles_blancs(bitmap_image image)
 	{
 		cout<<"tous vas bien, on a ddeux bandes"<<endl;
 	}
+	decision(image, (tableau_bandes[2] + tableau_bandes[3])/2, (tableau_bandes[6] + tableau_bandes[7])/2);
 }	
 
 
