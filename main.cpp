@@ -17,7 +17,12 @@ int moyenne_bord_x(bitmap_image image, int tolerance, int coord);
 int moyenne_bord_y(bitmap_image image, int tolerance, int coord);
 int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y);
 bool est_un_rectangle (int largeur, int hauteur, int tolerance, int plusPetiteDiagonale, int plusGrandeDiagonale);
+
 void decision(bitmap_image image, int centrey1, int centrey2);
+
+double position_cible (int rectangle1, int rectangle2, int taille_image);
+
+
 
 int main()
 {
@@ -54,7 +59,7 @@ int main()
    image1 = noir_ou_blanc(image1);
    image1 = convolution(image1, erosion);
    image1 = noir_ou_blanc(image1);
-   image1 = convolution(image1, erosion);   
+   image1 = convolution(image1, erosion);
    image1 = noir_ou_blanc(image1);
    image1.save_image("resultat_glorieux.bmp");
    cout<<"Resultat Glorieux !"<<endl;
@@ -257,6 +262,7 @@ void rectangles_blancs(bitmap_image image)
 		cout<<"largeur blob "<<tableau_blob_x[i*2]<<" ; "<< tableau_blob_x[i*2+1]<<endl;
 		recherche_hauteur(image,y,  tableau_blob_x[i*2], tableau_blob_x[i*2+1], coordonees);
 		cout<<"hauteur blob n "<<i<<" : "<<coordonees[0]<<"  "<<coordonees[1]<<endl;
+
 		tableau_blob_x[i*2] = moyenne_bord_x(image, 5, tableau_blob_x[i*2]);
 		tableau_blob_x[i*2+1] = moyenne_bord_x(image, 5, tableau_blob_x[i*2+1]);
 		tableau_blob_y[i*2] = moyenne_bord_y(image, 5, coordonees[0]);
@@ -285,7 +291,9 @@ void rectangles_blancs(bitmap_image image)
 		cout<<"tous vas bien, on a ddeux bandes"<<endl;
 	}
 	decision(image, (tableau_bandes[2] + tableau_bandes[3])/2, (tableau_bandes[6] + tableau_bandes[7])/2);
-}	
+	
+}
+
 
 
 void recherche_hauteur (bitmap_image image, int y, int x1, int x2, int* coordonees)//image, hauteur arbitraire y du rectangle, xdebut rectangle, x fin rectangle
@@ -295,7 +303,7 @@ void recherche_hauteur (bitmap_image image, int y, int x1, int x2, int* coordone
     //int coordonees[2];
     int x = (x1 + x2)/2;
     bool prems = true;
-    
+
     for (std::size_t y = 0; y < height; ++y)
 	{
 		image.get_pixel(x, y, colour);
@@ -304,8 +312,8 @@ void recherche_hauteur (bitmap_image image, int y, int x1, int x2, int* coordone
 			coordonees[1] = y;
 			if(prems == true){coordonees[0] = y;prems = false;}
 		}
-	}  
-    
+	}
+
     /*
     image.get_pixel(x, y, colour);
 
@@ -327,11 +335,18 @@ void recherche_hauteur (bitmap_image image, int y, int x1, int x2, int* coordone
     }
 
     coordonees[1] = y2+1;
-		
+<<<<<<< HEAD
+
+
+    cout<<"coordonnes du rectangle : "<<x1<<","<<x2<<","<<coordonees[0]<<","<<coordonees[1]<<endl;
+
+    verif_rectangle(image, x1, x2, coordonees[0], coordonees[1]);
+
+=======
+
     cout<<"coordonnes du rectangle : "<<x1<<","<<x2<<","<<coordonees[0]<<","<<coordonees[1]<<endl;
 */
    // verif_rectangle(image, x1, x2, coordonees[0], coordonees[1]);
-    
 }
 
 void verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2)
@@ -341,7 +356,9 @@ void verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2)
 	x2 = moyenne_bord_x(image, 5, x2);
 	//y1 = moyenne_bord_y(image, 5, y1);
 	//y2 = moyenne_bord_y(image, 5, y2);
-	
+
+    coordonees[1] = y2;
+
 	coordonees[1] = y2;
 
     cout<<"coordonnes du rectangle : "<<x1<<","<<x2<<","<<coordonees[0]<<","<<coordonees[1]<<endl;
@@ -365,11 +382,11 @@ int moyenne_bord_x(bitmap_image image, int tolerance, int coord)
 
 	const unsigned int height = image.height();
 	const unsigned int width  = image.width();
-	
+
 	int tab_densite[15];
 	int densitee = 0;
 	rgb_t colour;
-	
+
 	for (std::size_t x = coord - tolerance; x < coord + tolerance; ++x)
    	{
 		for (std::size_t y = 0; y < height; ++y)
@@ -402,4 +419,18 @@ bool est_un_rectangle (int largeur, int hauteur, int tolerance, int plusPetiteDi
     cout<<"Diagonale : "<< diagonale<<endl;
     return (9*largeur < hauteur+tolerance && 9*largeur > hauteur-tolerance) && (diagonale < plusGrandeDiagonale && diagonale > plusPetiteDiagonale);
 
+}
+
+double position_cible (int rectangle1, int rectangle2, int largeur_image, double tolerance)
+{
+    /*
+     * int cible = (rectangle1 + rectangle2)/2;
+    double cible = (milieu - (largeur_image/2)) / (largeur_image/2);
+
+    if(position < tolerance && position > -tolerance)
+    {
+        position = 0;
+    }
+	*/
+    return tolerance;
 }
