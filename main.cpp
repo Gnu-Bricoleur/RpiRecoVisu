@@ -8,6 +8,7 @@ using namespace std;
 bitmap_image noir_ou_blanc(bitmap_image image);
 bitmap_image soustraire_images(bitmap_image image1, bitmap_image image2);
 bitmap_image convolution(bitmap_image image1, vector<vector<int> > matrice);
+int recherche_y(bitmap_image image);
 void recherche_hauteur (bitmap_image image, int y, int x1, int x2, int* coordonees);
 void rectangles_blancs(bitmap_image image);
 
@@ -178,7 +179,7 @@ int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y
     const unsigned int width  = image.width();
     rgb_t couleur;
     int y = image.height()/2;
-    y = 400;	//############################################################################ A CORRIGER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    y = recherche_y(image);	//############################################################################ A CORRIGER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     int debut_blob = -10;
     int fin_blob = -10;
     bool blob = false;
@@ -252,7 +253,7 @@ void rectangles_blancs(bitmap_image image)
 	int nombre_blob = recherche_blobs(image, tableau_blob_x, tableau_blob_y);
 	cout<<nombre_blob<<" blobs trouve"<<endl;
 	int i = 0;
-	int y = 400;										//CONSTANTE MAGIQUE A DETERMINEER QCIENTIFIQUEMENT
+	int y = recherche_y(image);										//CONSTANTE MAGIQUE A DETERMINEER SCIENTIFIQUEMENT
 	int coordonees[2];
 	int tableau_bandes[100];
 	int nbrBandes= 0;
@@ -275,13 +276,13 @@ void rectangles_blancs(bitmap_image image)
 		int hauteur = tableau_blob_y[i*2+1]-tableau_blob_y[i*2];
 		if (est_un_rectangle(largeur, hauteur, 5, 10, 400))// tolerance et bornes min et max //A VERIFIER VRAI%MENT #################################################""
 		{
-			tableau_bandes[nbrBandes*4] = tableau_blob_x[i*2]; 
+			tableau_bandes[nbrBandes*4] = tableau_blob_x[i*2];
 			tableau_bandes[nbrBandes*4+1] = tableau_blob_x[i*2 + 1];
 			tableau_bandes[nbrBandes*4+2] = tableau_blob_y[i*2];
 			tableau_bandes[nbrBandes*4+3] = tableau_blob_y[i*2+1];
 			nbrBandes +=1;
 		}
-	}	
+	}
 	if (nbrBandes != 2)
 	{
 		cout<<"ALEEEEERRRTE !!!!!!!!!!!!!!!!!!! NOUS AVONS UN CODE ROUGE !!!!!!"<<endl;
@@ -291,7 +292,7 @@ void rectangles_blancs(bitmap_image image)
 		cout<<"tous vas bien, on a ddeux bandes"<<endl;
 	}
 	decision(image, (tableau_bandes[2] + tableau_bandes[3])/2, (tableau_bandes[6] + tableau_bandes[7])/2);
-	
+
 }
 
 
@@ -433,4 +434,41 @@ double position_cible (int rectangle1, int rectangle2, int largeur_image, double
     }
 	*/
     return tolerance;
+}
+
+int recherche_y(bitmap_image image)
+{
+    int nbr_pixels_blancs[image.height()] = {0};
+    int plus_grand_nbr_de_pixels_blancs = 0;
+    int y, x;
+    rgb_t colour;
+
+    for(y = 0; y < image.height(); y++)
+    {
+        for(x = 0; x < image.width(); x++)
+        {
+            image.get_pixel(x, y, colour);
+            if (colour.red == 255)
+            {
+                nbr_pixels_blancs[y]++;
+            }
+        }
+        if (nbr_pixels_blancs[y] > plus_grand_nbr_de_pixels_blancs)
+        {
+            plus_grand_nbr_de_pixels_blancs = nbr_pixels_blancs[y];
+        }
+    }
+
+    for(y = 0; nbr_pixels_blancs[y] < plus_grand_nbr_de_pixels_blancs/2; y++)
+    {
+    }
+    int plus_petit_y = y;
+
+    for(y = image.height(); nbr_pixels_blancs[y-1] < plus_grand_nbr_de_pixels_blancs/2; y--)
+    {
+    }
+    int plus_grand_y = y;
+
+    std::cout << "Milieu y des rectangles = " << (plus_grand_y + plus_petit_y) /2 << std::endl;
+    return (plus_grand_y + plus_petit_y) /2;
 }
