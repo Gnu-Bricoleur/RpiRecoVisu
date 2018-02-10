@@ -36,8 +36,8 @@ int main()
 
 	//vector<vector<int> > erosion {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
 
-   bitmap_image image1("avecflash24t.bmp");
-   bitmap_image image2("ssflash24t.bmp");
+   bitmap_image image1("avecflash24tg.bmp");
+   bitmap_image image2("ssflash24tg.bmp");
    if (!image1)
    {
       printf("Error - Failed to open: input1.bmp\n");
@@ -232,6 +232,7 @@ void decision(bitmap_image image, int centrey1, int centrey2)
 {
 	const unsigned int height = image.height();
 	const unsigned int width  = image.width();
+	cout<<"centres : "<<centrey1<<" : "<<centrey2<<endl;
 	int moy = (centrey1 + centrey2)/2;
 	if (moy > width/2)
 	{
@@ -274,14 +275,15 @@ void rectangles_blancs(bitmap_image image)
 	{
 		int largeur = tableau_blob_x[i*2+1]-tableau_blob_x[i*2];
 		int hauteur = tableau_blob_y[i*2+1]-tableau_blob_y[i*2];
-		if (est_un_rectangle(largeur, hauteur, 5, 10, 400))// tolerance et bornes min et max //A VERIFIER VRAI%MENT #################################################""
-		{
+		//if (est_un_rectangle(largeur, hauteur, 5, 10, 400))// tolerance et bornes min et max //A VERIFIER VRAI%MENT #################################################""
+		//{
 			tableau_bandes[nbrBandes*4] = tableau_blob_x[i*2];
 			tableau_bandes[nbrBandes*4+1] = tableau_blob_x[i*2 + 1];
 			tableau_bandes[nbrBandes*4+2] = tableau_blob_y[i*2];
 			tableau_bandes[nbrBandes*4+3] = tableau_blob_y[i*2+1];
 			nbrBandes +=1;
-		}
+			cout<<"on a une bande :"<<nbrBandes<<endl;
+		//}
 	}
 	if (nbrBandes != 2)
 	{
@@ -291,7 +293,7 @@ void rectangles_blancs(bitmap_image image)
 	{
 		cout<<"tous vas bien, on a ddeux bandes"<<endl;
 	}
-	decision(image, (tableau_bandes[2] + tableau_bandes[3])/2, (tableau_bandes[6] + tableau_bandes[7])/2);
+	decision(image, (tableau_bandes[0] + tableau_bandes[1])/2, (tableau_bandes[4] + tableau_bandes[5])/2);
 
 }
 
