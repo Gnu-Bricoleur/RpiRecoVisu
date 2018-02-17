@@ -15,12 +15,14 @@ for j in range(10):
 
 while i<10:
 	#prendre photo
+	cam.open(-1)
 	img=cam.read()
 	cv2.imwrite("ssflash24tg.bmp",img[1])
 	#os.system("convert imgssflsh.jpg -type truecolor -depth 8 BMP3:ssflash24tg.bmp")
 	#allumer lumiere
 	GPIO.output(4, 1)
 	#prendre photo
+	cam.open(-1)
 	img=cam.read()
 	cv2.imwrite("avecflash24tg.bmp",img[1])
 	#os.system("convert imgacflsh.jpg -type truecolor -depth 8 BMP3:avecflash24tg.bmp")
