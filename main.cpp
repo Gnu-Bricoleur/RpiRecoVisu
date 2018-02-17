@@ -12,11 +12,11 @@ int recherche_y(bitmap_image image);
 void recherche_hauteur (bitmap_image image, int y, int x1, int x2, int* coordonees);
 void rectangles_blancs(bitmap_image image);
 
-void verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2);
+bool verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2);
 int moyenne_bord_x(bitmap_image image, int tolerance, int coord);
 
 int moyenne_bord_y(bitmap_image image, int tolerance, int coord);
-int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y);
+int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y, int y);
 bool est_un_rectangle (int largeur, int hauteur, int tolerance, int plusPetiteDiagonale, int plusGrandeDiagonale);
 
 void decision(bitmap_image image, int centrey1, int centrey2);
@@ -170,7 +170,61 @@ bitmap_image convolution(bitmap_image image, vector<vector<int> > matrice)
 }
 
 
-int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y)
+
+void rectangles_blancs(bitmap_image image)
+{
+	cout<<"########################################################### Debut Reco Visu"<<endl;
+	int tableau_blob_x[100];
+	int tableau_blob_y[100];
+	int y = recherche_y(image);
+	cout<<"recherche de blobs a la hauteur "<< y <<endl;
+	int nombre_blob = recherche_blobs(image, tableau_blob_x, tableau_blob_y, y);
+	cout<<nombre_blob<<" blobs trouve"<<endl;
+	int i = 0;			
+	int coordonees[2];
+	int tableau_bandes[100];
+	int nbrBandes= 0;
+	for (i = 0; i <nombre_blob; i++)
+	{
+		cout<<"######## Blob n"<<i<<endl;
+		cout<<"largeur blob "<<tableau_blob_x[i*2]<<" ; "<< tableau_blob_x[i*2+1]<<endl;
+		recherche_hauteur(image,y,  tableau_blob_x[i*2], tableau_blob_x[i*2+1], coordonees);
+		cout<<"hauteur blob n "<<i<<" : "<<coordonees[0]<<"  "<<coordonees[1]<<endl;
+
+		tableau_blob_x[i*2] = moyenne_bord_x(image, 5, tableau_blob_x[i*2]);
+		tableau_blob_x[i*2+1] = moyenne_bord_x(image, 5, tableau_blob_x[i*2+1]);
+		tableau_blob_y[i*2] = moyenne_bord_y(image, 5, coordonees[0]);
+		tableau_blob_y[i*2+1] = moyenne_bord_y(image, 5, coordonees[1]);
+	}
+	//on a un beau tableau de blobs propres
+	for (i = 0; i < nombre_blob; i++)//on s'assure que nos blobs sont de beaux rectangles avec de bonnes proportions et compris entre deux bornes
+	{
+		int largeur = tableau_blob_x[i*2+1]-tableau_blob_x[i*2];
+		int hauteur = tableau_blob_y[i*2+1]-tableau_blob_y[i*2];
+		if (verif_rectangle(image, tableau_blob_x[i*2], tableau_blob_x[i*2+1], tableau_blob_y[i*2], tableau_blob_y[i*2+1]))// tolerance et bornes min et max //A VERIFIER VRAI%MENT #################################################""
+		{
+			tableau_bandes[nbrBandes*4] = tableau_blob_x[i*2];
+			tableau_bandes[nbrBandes*4+1] = tableau_blob_x[i*2 + 1];
+			tableau_bandes[nbrBandes*4+2] = tableau_blob_y[i*2];
+			tableau_bandes[nbrBandes*4+3] = tableau_blob_y[i*2+1];
+			nbrBandes +=1;
+			cout<<"on a une bande :"<<nbrBandes<<endl;
+		}
+	}
+	if (nbrBandes != 2)
+	{
+		cout<<"ALEEEEERRRTE !!!!!!!!!!!!!!!!!!! NOUS AVONS UN CODE ROUGE !!!!!!"<<endl;
+	}
+	else
+	{
+		cout<<"tous vas bien, on a ddeux bandes"<<endl;
+	}
+	decision(image, (tableau_bandes[0] + tableau_bandes[1])/2, (tableau_bandes[4] + tableau_bandes[5])/2);
+
+}
+
+
+int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y, int y)
 {
 	int nombre_blob = 0;
 	int coordonees[2];
@@ -178,8 +232,6 @@ int recherche_blobs(bitmap_image image, int* tableau_blob_x, int* tableau_blob_y
 	const unsigned int height = image.height();
     const unsigned int width  = image.width();
     rgb_t couleur;
-    int y = image.height()/2;
-    y = recherche_y(image);	//############################################################################ A CORRIGER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     int debut_blob = -10;
     int fin_blob = -10;
     bool blob = false;
@@ -245,57 +297,7 @@ void decision(bitmap_image image, int centrey1, int centrey2)
 }
 
 
-void rectangles_blancs(bitmap_image image)
-{
-	cout<<"########################################################### Debut Reco Visu"<<endl;
-	int tableau_blob_x[100];
-	int tableau_blob_y[100];
-	cout<<"recherche de blobs"<<endl;
-	int nombre_blob = recherche_blobs(image, tableau_blob_x, tableau_blob_y);
-	cout<<nombre_blob<<" blobs trouve"<<endl;
-	int i = 0;
-	int y = recherche_y(image);										//CONSTANTE MAGIQUE A DETERMINEER SCIENTIFIQUEMENT
-	int coordonees[2];
-	int tableau_bandes[100];
-	int nbrBandes= 0;
-	for (i = 0; i <nombre_blob; i++)
-	{
-		cout<<"######## Blob n"<<i<<endl;
-		cout<<"largeur blob "<<tableau_blob_x[i*2]<<" ; "<< tableau_blob_x[i*2+1]<<endl;
-		recherche_hauteur(image,y,  tableau_blob_x[i*2], tableau_blob_x[i*2+1], coordonees);
-		cout<<"hauteur blob n "<<i<<" : "<<coordonees[0]<<"  "<<coordonees[1]<<endl;
 
-		tableau_blob_x[i*2] = moyenne_bord_x(image, 5, tableau_blob_x[i*2]);
-		tableau_blob_x[i*2+1] = moyenne_bord_x(image, 5, tableau_blob_x[i*2+1]);
-		tableau_blob_y[i*2] = moyenne_bord_y(image, 5, coordonees[0]);
-		tableau_blob_y[i*2+1] = moyenne_bord_y(image, 5, coordonees[1]);
-	}
-	//on a un beau tableau de blobs propres
-	for (i = 0; i < nombre_blob; i++)//on s'assure que nos blobs sont de beaux rectangles avec de bonnes proportions et compris entre deux bornes
-	{
-		int largeur = tableau_blob_x[i*2+1]-tableau_blob_x[i*2];
-		int hauteur = tableau_blob_y[i*2+1]-tableau_blob_y[i*2];
-		//if (est_un_rectangle(largeur, hauteur, 5, 10, 400))// tolerance et bornes min et max //A VERIFIER VRAI%MENT #################################################""
-		//{
-			tableau_bandes[nbrBandes*4] = tableau_blob_x[i*2];
-			tableau_bandes[nbrBandes*4+1] = tableau_blob_x[i*2 + 1];
-			tableau_bandes[nbrBandes*4+2] = tableau_blob_y[i*2];
-			tableau_bandes[nbrBandes*4+3] = tableau_blob_y[i*2+1];
-			nbrBandes +=1;
-			cout<<"on a une bande :"<<nbrBandes<<endl;
-		//}
-	}
-	if (nbrBandes != 2)
-	{
-		cout<<"ALEEEEERRRTE !!!!!!!!!!!!!!!!!!! NOUS AVONS UN CODE ROUGE !!!!!!"<<endl;
-	}
-	else
-	{
-		cout<<"tous vas bien, on a ddeux bandes"<<endl;
-	}
-	decision(image, (tableau_bandes[0] + tableau_bandes[1])/2, (tableau_bandes[4] + tableau_bandes[5])/2);
-
-}
 
 
 
@@ -352,7 +354,7 @@ void recherche_hauteur (bitmap_image image, int y, int x1, int x2, int* coordone
    // verif_rectangle(image, x1, x2, coordonees[0], coordonees[1]);
 }
 
-void verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2)
+bool verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2)
 {
 	int coordonees[2];
 	x1 = moyenne_bord_x(image, 5, x1);
@@ -368,11 +370,27 @@ void verif_rectangle(bitmap_image image, int x1, int x2, int y1, int y2)
 
     int largeur = x2 - x1;
     int hauteur = y2 - y1;
-    cout<<"Est un rectangle : "<<est_un_rectangle(largeur, hauteur, 50, 0, 1000) << endl; //Tolerance et Tailles de diagonales à determiner
+    cout<<"Est un rectangle : "<<est_un_rectangle(largeur, hauteur, 50, 50, 500) << endl; //Tolerance et Tailles de diagonales à determiner
+
+    if (est_un_rectangle(largeur, hauteur, 50, 50, 500))
+    {
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 
 }
 
+//Si la hauteur est environ 9X plus grande (normalement c'est 8X mais avec l'erosion la largeur diminue) que la largeur et que la diagonale est comprise entre 2 bornes -> true
+bool est_un_rectangle (int largeur, int hauteur, int tolerance, int plusPetiteDiagonale, int plusGrandeDiagonale)
+{
+    double diagonale = sqrt( pow(largeur,2) + pow(hauteur,2) );
+    cout<<"Diagonale : "<< diagonale<<endl;
+    return (9*largeur < hauteur+tolerance && 9*largeur > hauteur-tolerance) && (diagonale < plusGrandeDiagonale && diagonale > plusPetiteDiagonale);
 
+}
 
 
 int moyenne_bord_y(bitmap_image image, int tolerance, int coord)
@@ -415,14 +433,7 @@ int moyenne_bord_x(bitmap_image image, int tolerance, int coord)
 
 }
 
-//Si la hauteur est environ 9X plus grande (normalement c'est 8X mais avec l'erosion la largeur diminue) que la largeur et que la diagonale est comprise entre 2 bornes -> true
-bool est_un_rectangle (int largeur, int hauteur, int tolerance, int plusPetiteDiagonale, int plusGrandeDiagonale)
-{
-    double diagonale = sqrt( pow(largeur,2) + pow(hauteur,2) );
-    cout<<"Diagonale : "<< diagonale<<endl;
-    return (9*largeur < hauteur+tolerance && 9*largeur > hauteur-tolerance) && (diagonale < plusGrandeDiagonale && diagonale > plusPetiteDiagonale);
 
-}
 
 double position_cible (int rectangle1, int rectangle2, int largeur_image, double tolerance)
 {
