@@ -2,6 +2,7 @@
 #include "bitmap_image.hpp"
 #include <vector>
 #include <cmath>
+#include <ctime>
 
 using namespace std;
 
@@ -27,7 +28,9 @@ double position_cible (int rectangle1, int rectangle2, int taille_image);
 
 int main()
 {
-
+	time_t curr_time;
+	curr_time = time(NULL);
+	char *tm = ctime(&curr_time);
    //int tab_erosion[3][3] = {{0, 1, 0},{1, 1, 1},{0, 1, 0}};
    //int (*erosion)[3] = tab_erosion;
 
@@ -63,6 +66,7 @@ int main()
    image1 = convolution(image1, erosion);
    image1 = noir_ou_blanc(image1);
    image1.save_image("resultat_glorieux.bmp");
+   image1.save_image(tm);
    cout<<"Resultat Glorieux !"<<endl;
    rectangles_blancs(image1);
    return 0;
